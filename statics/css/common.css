@@ -1,0 +1,45 @@
+@import url(//fonts.googleapis.com/earlyaccess/notosanstc.css);
+
+body {
+  font-family: "Noto Sans TC", sans-serif;
+}
+
+/* scrollbar width */
+*::-webkit-scrollbar {
+  width: 7.5px;
+}
+
+/* scrollbar track */
+*::-webkit-scrollbar-track {
+  background: #eee;
+}
+
+/* scrollbar handle */
+*::-webkit-scrollbar-thumb {
+  border-radius: 1rem;
+  background-color: #000000;
+  background-image: -webkit-gradient(
+    linear,
+    left bottom,
+    left top,
+    from(#4e4e4e),
+    to(#35363A)
+  );
+  background-image: -webkit-linear-gradient(bottom, #4e4e4e  0%,#35363A 100%);
+  background-image: linear-gradient(to top, #4e4e4e 0%, #35363A 100%);
+}
+
+.wrapper {
+  display: flex;
+  height: 85vh;
+  width: 100vw;
+  align-items: stretch;
+  overflow: auto;
+}
+
+.wrapper > .content {
+  height: 100%;
+  overflow: auto;
+  background-origin: content-box;
+}
+
