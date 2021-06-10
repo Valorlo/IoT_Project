@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Local files
+Drone/db.sqlite3
+*.sqlite3
