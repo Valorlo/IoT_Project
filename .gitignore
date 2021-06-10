@@ -131,3 +131,4 @@ dmypy.json
 # Local files
 flight/db.sqlite3
 *.sqlite3
+*/migrations/
