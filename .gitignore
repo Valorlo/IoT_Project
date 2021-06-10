@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Local files
+flight/db.sqlite3
+flight/key.py
+*.sqlite3
+*/migrations/
