@@ -30,4 +30,5 @@ urlpatterns = [
     re_path(r'api/users/regist',dviews.api_regist),
     re_path(r'api/users/login',dviews.api_login),
     re_path(r'api/users/confirm',dviews.api_confirm),
+    re_path(r'api/users/retrieve',dviews.api_retrieve),
 ]

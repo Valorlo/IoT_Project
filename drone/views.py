@@ -75,3 +75,11 @@ def api_confirm(req):
         mo = mailOffices.objects.filter(id = pid)[0]
         package = packages.objects.create(mailoffice = mo,counts = counts)
         return JsonResponse({'status':True})
+
+# api/users/retrieve
+@csrf_exempt
+def api_retrieve(req):
+    if req.method == 'POST':
+        source_name = req.session['name']
+        mo = mailOffices.objects.filter(name = source_name)[0]
+        return JsonResponse({'status':True,'name':mo.name,'address':mo.city+mo.region+mo.address,"time":mo.deliver})

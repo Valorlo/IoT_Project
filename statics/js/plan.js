@@ -21,12 +21,26 @@ $("#order").on('click',function(){
         success:function(msg){
             if(msg.status){
                 $(".card").hide()
+                setTimeout(signFor,3000)
             }else{
                 alert("something went wrong :(")
             }
         }
     })
 })
+
+// arrive destination, waiting for be signed for
+function signFor(){
+    var name,address,time;
+    $.ajax({
+        method:"POST",
+        url:"api/users/retrieve",
+        success:function(msg){
+
+        }
+    })
+    $("#deliverForm").show();
+}
 
 // Google maps
 var map;
