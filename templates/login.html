@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% include 'required.html' %}
+    <title>Delivery Drone</title>
+</head>
+
+<body>
+    <!-- regist Modal -->
+    <div class="modal fade" id="registWindow" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">輸入基本資料</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="name">郵局名稱</label>
+                        <input type="text" class="form-control" id="mName" placeholder="郵局名稱">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">郵局 Email</label>
+                        <input type="email" class="form-control" id="mEmail" aria-describedby="emailHelp"
+                            placeholder="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">密碼</label>
+                        <input type="password" class="form-control" id="mPw" placeholder="Password">
+                    </div>
+                    <div role="tw-city-selector" data-bootstrap-style>
+                        <label for="title">地址</label>
+                    </div>
+                    <form>
+                        <div class="row">
+                            <div class="col">
+                                <input type="text" class="form-control" id="street" placeholder="地址">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">關閉</button>
+                    <button type="button" class="btn btn-primary" id="doneRegisting">註冊</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- login Modal -->
+    <div class="modal fade" id="loginWindow" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">登入</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">郵局 Email</label>
+                        <input type="email" class="form-control" id="account" aria-describedby="emailHelp"
+                            placeholder="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">密碼</label>
+                        <input type="password" class="form-control" id="psw" placeholder="Password">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">關閉</button>
+                    <button type="button" class="btn btn-primary" id="doneLogin">確認登入</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if name %}
+        <h3>{{name}} 你已經登入了!</h3>
+        <script>
+            var logout = () => {
+              $.ajax({
+                url: '/logout'
+              }).done(() => {
+                window.location.href = '/'
+              })
+            }
+          </script>
+        <a href="#" onclick="logout()">登出</a>
+    {% else %}
+        <h3>你還沒登入唷~</h3>
+        <button class="btn btn-outline-success" id="login">登入</button>
+        <button class="btn btn-outline-primary" id="register">註冊</button>
+    {% endif %}
+</body>
+<script src="/statics/js/login.js"></script>
+<!-- 台灣縣市鄉鎮下拉選單 -->
+<script src="/statics/js/tw-city-selector.js"></script>
+<script>
+    new TwCitySelector();
+</script>
+</html>

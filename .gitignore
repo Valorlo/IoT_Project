@@ -129,7 +129,6 @@ dmypy.json
 .pyre/
 
 # Local files
-flight/db.sqlite3
 flight/key.py
-*.sqlite3
+drone/key.py
 */migrations/

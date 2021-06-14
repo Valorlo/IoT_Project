@@ -23,4 +23,10 @@ import drone.views as dviews
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', dviews.frontPage),
+    path('plan',dviews.plan),
+    path('logout',dviews.logout),
+
+    # api url
+    re_path(r'api/users/regist',dviews.api_regist),
+    re_path(r'api/users/login',dviews.api_login),
 ]
