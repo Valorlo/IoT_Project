@@ -29,7 +29,9 @@ def frontPage(req):
 
 # decide the destination
 def plan(req):
-    return render(req,"planDestination.html",{"api":GOOGLE_API})
+    # 不能目的地選到自己
+    dest = mailOffices.objects.filter().exclude(name = req.session['name'])
+    return render(req,"planDestination.html",{"api":GOOGLE_API,"dests":dest})
 
 # logout
 def logout(req):
@@ -48,7 +50,6 @@ def api_regist(req):
         city = req.POST['mCity']
         region = req.POST['mRegion']
         address = req.POST['mAddress']
-        req.session['name'] = name
         mo = mailOffices.objects.create(name = name,password = hash_code(pw), email = email, city=city, region = region, address = address)
         return JsonResponse({'status':True})
 
@@ -64,3 +65,13 @@ def api_login(req):
             return JsonResponse({'status':True})
         else:
             return JsonResponse({'status':False})
+
+# api/users/confirm
+@csrf_exempt
+def api_confirm(req):
+    if req.method == 'POST':
+        pid = req.POST['pid']
+        counts = int(req.POST['counts'])
+        mo = mailOffices.objects.filter(id = pid)[0]
+        package = packages.objects.create(mailoffice = mo,counts = counts)
+        return JsonResponse({'status':True})

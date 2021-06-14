@@ -37,7 +37,7 @@ function regist() {
             },
             success: function(msg) {
                 if (msg.status) {
-                    window.location.href = "/plan";
+                    window.location.href = "/";
                 } else {
                     window.location.reload();
                 }

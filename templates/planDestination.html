@@ -1,12 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     {% include 'required.html' %}
     <title>plan destination</title>
 </head>
+
 <body>
-    <div id="map" style="width: 800px; height: 600px;"></div>
+    <div class="wrapper d-flex justify-content-center">
+        <div class="card mb-3 w-50 text-center">
+            <div class="card-body ">
+                <div class="form-group row">
+                    <label for="select" class="col-sm-2 col-form-label">目的地選擇</label>
+                    <div class="col-sm-10">
+                        <select class="form-control" id="destination">
+                            <option>請選擇目的地</option>
+                            {% for d in dests %}
+                            <option value={{d.city}}{{d.region}}{{d.address}} id={{d.id}}>{{d.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="readAddress" class="col-sm-2 col-form-label">目的地地址</label>
+                    <div class="col-sm-10">
+                        <input class="form-control" type="text" id="address" placeholder="" readonly>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="packageNumbers" class="col-sm-2 col-form-label">貨物數量</label>
+                    <div class="col-sm-10">
+                        <input type="number" class="form-control" id="pNumbers">
+                    </div>
+                </div>
+                <button class="btn btn-success btn-sm" id="order">確認送出</button>
+            </div>
+        </div>
+        <div id="map" style="width: 50%; height: 450px;"></div>
+    </div>
 </body>
 <script src="https://maps.googleapis.com/maps/api/js?key={{api}}&libraries=places"></script>
 <script src="/statics/js/plan.js"></script>
+
 </html>

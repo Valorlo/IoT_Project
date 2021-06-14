@@ -1,5 +1,35 @@
-var map;
+// detect destinations select
+$('#destination').on('change', function() {
+    if($(this).val() != "請選擇目的地"){
+        $("#address").attr("placeholder",$(this).val());
+    }else{
+        $("#address").attr("placeholder","");
+    }
+});
+
+// order confirm
+$("#order").on('click',function(){
+    var pid = $("#destination option:selected").attr("id")
+    var counts = $("#pNumbers").val()
+    $.ajax({
+        method:"POST",
+        url:"api/users/confirm",
+        data:{
+            pid:pid,
+            counts:counts
+        },
+        success:function(msg){
+            if(msg.status){
+                $(".card").hide()
+            }else{
+                alert("something went wrong :(")
+            }
+        }
+    })
+})
+
 // Google maps
+var map;
 // First load
 function initialize() {
     var uluru = {lat: 22.6272784, lng: 120.3014353};

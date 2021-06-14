@@ -17,7 +17,7 @@ class mailOffices(models.Model):
     address = models.CharField(max_length=150) #郵局地址的里等等
 
 class packages(models.Model):
-    pid = models.ForeignKey(mailOffices, on_delete=models.CASCADE) #每次送貨會有對應的目的地郵局id
+    mailoffice = models.ForeignKey(mailOffices, on_delete=models.CASCADE) #每次送貨會有對應的目的地郵局
     counts = models.IntegerField(null=False, default=0) #每次貨物的數量
     taken = models.BooleanField(default=False) #是否被拿取了
     deliver = models.DateTimeField(default=timezone.now) #送出貨物的時間
