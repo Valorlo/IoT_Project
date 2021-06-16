@@ -3,6 +3,7 @@
 
 <head>
     {% include 'required.html' %}
+    <link rel="stylesheet" href="/statics/css/fontPage.css">
     <title>Delivery Drone</title>
 </head>
 
@@ -82,21 +83,36 @@
     </div>
 
     {% if name %}
-        <h3>{{name}} 你已經登入了!</h3>
-        <script>
-            var logout = () => {
-              $.ajax({
+    <h3>{{name}} 你已經登入了!</h3>
+    <script>
+        var logout = () => {
+            $.ajax({
                 url: '/logout'
-              }).done(() => {
+            }).done(() => {
                 window.location.href = '/'
-              })
-            }
-          </script>
-        <a href="#" onclick="logout()">登出</a>
+            })
+        }
+    </script>
+    <a href="#" onclick="logout()">登出</a>
     {% else %}
-        <h3>你還沒登入唷~</h3>
-        <button class="btn btn-outline-success" id="login">登入</button>
-        <button class="btn btn-outline-primary" id="register">註冊</button>
+    <div class="main" style="width: 150vw; height: 100vh;"></div>
+    <div class="d-flex flex-column justify-content-center align-items-center" style="width: 100vw; height: 100vh;">
+        <div class="icon"><img src="/statics/images/d.png"
+                style="position: relative; left: 83%; top: 12%; transform: rotate(45deg);">
+        </div>
+        <div class="title">
+            <img src="statics/images/biglogo2-re.png" class="rounded mx-auto d-block w-50 mb-3">
+            <h4 class=" text-center mt-4">小小送貨員</h4>
+            <div class="container d-flex justify-content-center">
+                <button class="btn btn-outline-dark border-dark mt-4 mr-5 p-3" id="login">
+                    <p class="mb-0" style="font-size: 1.0rem;"><i class="fas fa-sign-in-alt mr-2"></i>登入</p>
+                </button>
+                <button class="btn btn-outline-dark border-dark mt-4" id="register">
+                    <p class="mb-0" style="font-size: 1.0rem;"><i class="fas fa-user-alt mr-2"></i>註冊</p>
+                </button>
+            </div>
+        </div>
+    </div>
     {% endif %}
 </body>
 <script src="/statics/js/login.js"></script>
@@ -105,4 +121,5 @@
 <script>
     new TwCitySelector();
 </script>
+
 </html>

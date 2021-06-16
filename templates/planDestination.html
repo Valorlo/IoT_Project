@@ -9,8 +9,9 @@
 <body>
     <div class="wrapper d-flex justify-content-center">
         <!-- 填寫送貨資訊 -->
-        <div class="card mb-3 w-50 text-center" style="display: none;">
+        <div class="card mb-3 w-50 text-center">
             <div class="card-body ">
+                <div class="source_info" style="display: none;">{{address_info}}</div>
                 <div class="form-group row">
                     <label for="select" class="col-sm-2 col-form-label">目的地選擇</label>
                     <div class="col-sm-10">
@@ -38,31 +39,55 @@
             </div>
         </div>
         <!-- 收貨確認 -->
-        <table class="table w-50" id="deliverForm">
+        <table class="table w-75" id="deliverForm" style="display: none;">
             <thead>
                 <tr class="table-success">
                     <th scope="col">出發地</th>
                     <th scope="col">出發地地址</th>
                     <th scope="col">出發時間</th>
                     <th scope="col">貨物數量</th>
-                    <th scope="col">簽收</th>
+                    <th scope="col" >簽收</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                <tr id="pid" >
+                    <td id="source_name"></td>
+                    <td id="source_address"></td>
+                    <td id="start_time"></td>
+                    <td id="p_counts"></td>
                     <td>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1" style="width: 15px; height: 15px;">
-                            <label class="form-check-label" for="inlineCheckbox1">簽收</label>
-                        </div>
+                        <button type="button" class="btn btn-success btn-sm" id="signfor">簽收</button>
                     </td>
                 </tr>
             </tbody>
         </table>
+        <!-- 警示視窗 -->
+        <div class="modal fade" id="warning" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-body pb-0">
+                        <div class="row justify-content-center">
+                            <img src="/statics/images/warning.png">
+                        </div>
+                        <div class="row text-center justify-content-center mt-2">
+                            <h3>
+                                請確定您已拿取包裹且遠離無人機後
+                            </h3>
+                            <h3>
+                                ，再點選確認返航！
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-center" style="border: none;">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-success" id="return">確認返航</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div id="map" style="width: 50%; height: 450px;"></div>
     </div>
 </body>

@@ -1,0 +1,87 @@
+div.main{
+    z-index: 1;
+    position: fixed;
+    left: 0;
+    right: 0;
+    display: block;
+    background-image: url("/statics/images/bg5.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+div.icon{
+    z-index: 2;
+    position: fixed;
+    background-color: white;
+    opacity: 0.7;
+    height: 550px;
+    width: 550px;
+    border-radius: 50%;
+    border:3px solid black;
+    border-right: 3px solid #fff;
+    border-bottom: 3px solid #fff;
+    border-left: 3px solid #fff;
+    -webkit-animation: icon 6s infinite linear;
+    -moz-animation: icon 6s infinite linear;
+    -o-animation: icon 6s infinite linear;
+    animation: icon 6s infinite linear, fadein ease 2s;
+}
+div.title{
+    z-index: 3;
+    animation: title-fadein ease 2.5s;
+}
+
+div.modal-content{
+    z-index: 4;
+}
+
+@keyframes fadein {
+    0% {opacity:0;}
+    100% {opacity:0.7;}
+}
+
+@keyframes title-fadein {
+    0% {opacity:0;}
+    100% {opacity:1;}
+}
+
+/* @keyframes fadein{
+    0%{opacity: 0;}
+    25%{opacity: 0.1;}
+    50%{opacity: 0.2;}
+    75%{opacity: 0.4;}
+    100%{opacity: 0.6;}
+} */
+
+@-webkit-keyframes icon {
+	from {
+		-webkit-transform: rotate(0deg);
+	}
+	to {
+		-webkit-transform: rotate(360deg);
+	}
+}
+@-moz-keyframes icon {
+	from {
+		-moz-transform: rotate(0deg);
+	}
+	to {
+		-moz-transform: rotate(360deg);
+	}
+}
+@-o-keyframes icon {
+	from {
+		-o-transform: rotate(0deg);
+	}
+	to {
+		-o-transform: rotate(360deg);
+	}
+}
+@keyframes icon {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}

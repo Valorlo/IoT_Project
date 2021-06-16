@@ -1,11 +1,13 @@
+from array import array
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse,HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from drone.models import *
+from django.utils import timezone
 import hashlib
 import json,string,random,socket,json,os,time,uuid
-from datetime import datetime
+from datetime import date, datetime
 import hashlib #用於加密密碼
 from .key import secret
 import os
@@ -31,7 +33,8 @@ def frontPage(req):
 def plan(req):
     # 不能目的地選到自己
     dest = mailOffices.objects.filter().exclude(name = req.session['name'])
-    return render(req,"planDestination.html",{"api":GOOGLE_API,"dests":dest})
+    source = mailOffices.objects.filter(name = req.session["name"])[0]
+    return render(req,"planDestination.html",{"api":GOOGLE_API,"dests":dest,"address_info":source.city+source.region+source.address})
 
 # logout
 def logout(req):
@@ -72,6 +75,9 @@ def api_confirm(req):
     if req.method == 'POST':
         pid = req.POST['pid']
         counts = int(req.POST['counts'])
+        # destination's lat lng，要publish到broker
+        lat = req.POST['lat']
+        lat = req.POST['lng']
         mo = mailOffices.objects.filter(id = pid)[0]
         package = packages.objects.create(mailoffice = mo,counts = counts)
         return JsonResponse({'status':True})
@@ -80,6 +86,38 @@ def api_confirm(req):
 @csrf_exempt
 def api_retrieve(req):
     if req.method == 'POST':
-        source_name = req.session['name']
-        mo = mailOffices.objects.filter(name = source_name)[0]
-        return JsonResponse({'status':True,'name':mo.name,'address':mo.city+mo.region+mo.address,"time":mo.deliver})
+        source_mid = req.POST['mid']
+        mo = mailOffices.objects.filter(id = source_mid)[0]
+        pInfo = packages.objects.filter(mailoffice = mo)[0]
+
+        return JsonResponse({'status':True,
+        'name':pInfo.mailoffice.name,
+        'address':pInfo.mailoffice.city+pInfo.mailoffice.region+pInfo.mailoffice.address,
+        "time":pInfo.deliver,
+        'counts':pInfo.counts,
+        'pid':pInfo.id})
+
+# api/users/signfor
+@csrf_exempt
+def api_signfor(req):
+    if req.method == 'POST':
+        pid = req.POST['pid']
+        pInfo = packages.objects.filter(id = pid)
+        arrived = timezone.now()
+        pInfo.update(taken = True)
+        pInfo.update(arrived = arrived)
+
+        return JsonResponse({'status':True,"arrive_time":arrived})
+
+# api/drone/current
+@csrf_exempt
+def api_currentPos(req):
+    # 網頁是用get method去抓無人機目前飛行的gps(subscribe)
+    pass
+
+# api/drone/rtl
+@csrf_exempt
+def api_rtl(req):
+    if req.method == 'POST':
+        # 這邊要publish"返航"的信號給無人機
+        return JsonResponse({'status':True})

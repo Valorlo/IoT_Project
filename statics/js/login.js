@@ -5,6 +5,7 @@ $('#register').on('click', function () {
 
 // 登入框框
 $('#login').on('click', function () {
+    console.log("login")
     $("#loginWindow").modal("toggle");
 })
 
