@@ -1,12 +1,17 @@
 from array import array
+from django.core import mail
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse,HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from drone.models import *
 from django.utils import timezone
+from django.core.mail import EmailMessage
+from django.conf import settings
+from django.template.loader import render_to_string
+from email.utils import make_msgid 
 import hashlib
-import json,string,random,socket,json,os,time,uuid
+import json,string,random,socket,os,time,uuid
 from datetime import date, datetime
 import hashlib #用於加密密碼
 from .key import secret
@@ -63,9 +68,10 @@ def api_login(req):
         account = req.POST['account']
         psw = req.POST['psw']
         mo = mailOffices.objects.filter(email = account)
-        if mo[0].password == hash_code(psw) and 'name' not in req.session and len(mo)!=0:
-            req.session['name'] = mo[0].name
-            return JsonResponse({'status':True})
+        if len(mo)!=0:
+            if mo[0].password == hash_code(psw) and 'name' not in req.session:
+                req.session['name'] = mo[0].name
+                return JsonResponse({'status':True})
         else:
             return JsonResponse({'status':False})
 
@@ -78,21 +84,22 @@ def api_confirm(req):
         # destination's lat lng，要publish到broker
         lat = req.POST['lat']
         lat = req.POST['lng']
-        mo = mailOffices.objects.filter(id = pid)[0]
-        package = packages.objects.create(mailoffice = mo,counts = counts)
+        dest = mailOffices.objects.filter(id = pid)[0]
+        source = mailOffices.objects.filter(name = req.session['name'])[0]
+        package = packages.objects.create(dest_office = dest,source_office = source,counts = counts)
         return JsonResponse({'status':True})
 
 # api/users/retrieve
 @csrf_exempt
 def api_retrieve(req):
     if req.method == 'POST':
-        source_mid = req.POST['mid']
-        mo = mailOffices.objects.filter(id = source_mid)[0]
-        pInfo = packages.objects.filter(mailoffice = mo)[0]
+        dest_mid = req.POST['mid']
+        dest = mailOffices.objects.filter(id = dest_mid)[0]
+        pInfo = packages.objects.filter(dest_office = dest)[0]
 
         return JsonResponse({'status':True,
-        'name':pInfo.mailoffice.name,
-        'address':pInfo.mailoffice.city+pInfo.mailoffice.region+pInfo.mailoffice.address,
+        'name':pInfo.source_office.name,
+        'address':pInfo.source_office.city+pInfo.source_office.region+pInfo.source_office.address,
         "time":pInfo.deliver,
         'counts':pInfo.counts,
         'pid':pInfo.id})
@@ -108,6 +115,30 @@ def api_signfor(req):
         pInfo.update(arrived = arrived)
 
         return JsonResponse({'status':True,"arrive_time":arrived})
+
+# api/users/sendEmail
+@csrf_exempt
+def api_sendEmail(req):
+    if req.method == "POST":
+        pid = req.POST["pid"]
+        package_info = packages.objects.filter(id = pid)[0]
+        email_template = render_to_string(
+            '../templates/email_template.html',
+            {
+                'pid': pid,
+                "office_name":package_info.dest_office.name
+            }
+        )
+        email = EmailMessage(
+            '包裹抵達囉！',  # 電子郵件標題
+            email_template,  # 電子郵件內容
+            settings.EMAIL_HOST_USER,  # 寄件者
+            [package_info.dest_office.email, package_info.source_office.email]  # 收件者
+        )
+        email.content_subtype = "html"
+        email.fail_silently = False
+        email.send()
+        return JsonResponse({'status':True})
 
 # api/drone/current
 @csrf_exempt

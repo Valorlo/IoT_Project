@@ -39,18 +39,20 @@
             </div>
         </div>
         <!-- 收貨確認 -->
-        <table class="table w-75" id="deliverForm" style="display: none;">
+        <table class="table w-75 table-bordered" id="deliverForm" style="display: none;">
             <thead>
                 <tr class="table-success">
+                    <th scope="col">貨物編號</th>
                     <th scope="col">出發地</th>
                     <th scope="col">出發地地址</th>
                     <th scope="col">出發時間</th>
                     <th scope="col">貨物數量</th>
-                    <th scope="col" >簽收</th>
+                    <th scope="col">簽收</th>
                 </tr>
             </thead>
             <tbody>
-                <tr id="pid" >
+                <tr>
+                    <td id="packages_id"></td>
                     <td id="source_name"></td>
                     <td id="source_address"></td>
                     <td id="start_time"></td>

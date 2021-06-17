@@ -160,7 +160,7 @@ function deliveryInfo(){
         },
         success:function(msg){
             if(msg.status){
-                $("#pid").val(msg.pid)
+                $("#packages_id").text(msg.pid)
                 $("#source_name").text(msg.name)
                 $("#source_address").text(msg.address)
                 var date = new Date(msg.time)
@@ -177,7 +177,7 @@ function deliveryInfo(){
 // sign up packages
 $("#signfor").on('click',signfor)
 function signfor(){
-    var pid = $("#pid").val();
+    var pid = $("#packages_id").text();
     $.ajax({
         method:"POST",
         url:"api/users/signfor",
@@ -186,8 +186,8 @@ function signfor(){
         },
         success:function(msg){
             if(msg.status){
-                $("thead tr").children()[4].remove()
-                $("tbody tr").children()[4].remove()
+                $("thead tr").children()[5].remove()
+                $("tbody tr").children()[5].remove()
                 $("thead tr").append(`<th scope="col">抵達時間</th><th scope="col">返航</th>`)
                 var date = new Date(msg.arrive_time)
                 var result = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' 
@@ -207,8 +207,42 @@ function rtl(){
         url:"api/drone/rtl",
         success:function(msg){
             if(msg.status){
-                window.location.reload()
+                var pid = $("#packages_id").text();
+                $.ajax({
+                    method:"POST",
+                    url:"api/users/sendEmail",
+                    data:{
+                        pid:pid
+                    },
+                    success:function(msg){
+                        if(msg.status){
+                            console.log("Email sent!")
+                            setTimeout(function(){
+                                window.location.reload()
+                            },3000)
+                        }
+                    }
+                })
             }
         }
     })
 }
+
+// Sending email
+$(document).ready(function(){
+    $('div.yo').on('click',"button#notifyCP",(e)=>{
+        var pid = $("#packages_id").text();
+        $.ajax({
+            method:"POST",
+            url:"api/users/sendEmail",
+            data:{
+                pid:pid
+            },
+            success:function(msg){
+                if(msg.status){
+                    console.log("Email sent!")
+                }
+            }
+        })
+    })
+})

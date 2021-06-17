@@ -32,6 +32,7 @@ urlpatterns = [
     re_path(r'api/users/confirm',dviews.api_confirm),
     re_path(r'api/users/retrieve',dviews.api_retrieve),
     re_path(r'api/users/signfor',dviews.api_signfor),
+    re_path(r'api/users/sendEmail',dviews.api_sendEmail),
 
     #drone
     re_path(r'api/drone/current',dviews.api_currentPos),
