@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% include 'required.html' %}
+    {% include 'nav.html' %}
+    <link rel="stylesheet" href="/statics/css/record.css">
+    <title>record</title>
+</head>
+
+<body>
+    <div class="wrapper w-100 p-4" style="height: 85vh;">
+        <!-- 收貨確認 -->
+        <div class="table-wrapper-scroll-y my-custom-scrollbar">
+            <table class="table table-bordered" style="max-height: 10vh; ">
+                <thead style="position: sticky; top: 0;">
+                    <tr class="table-success">
+                        <th scope="col">貨物編號</th>
+                        <th scope="col">出發地</th>
+                        <th scope="col">出發地地址</th>
+                        <th scope="col">出發時間</th>
+                        <th scope="col">目的地</th>
+                        <th scope="col">目的地地址</th>
+                        <th scope="col">抵達時間</th>
+                        <th scope="col">貨物數量</th>
+                    </tr>
+                </thead>
+                
+                <tbody>
+                    {% for p in pList %}
+                    <tr>
+
+                        <td>{{p.id}}</td>
+                        <td>{{p.source_office.name}}</td>
+                        <td>{{p.source_office.city}}{{p.source_office.region}}{{p.source_office.address}}</td>
+                        <td>{{p.deliver}}</td>
+                        <td>{{p.dest_office.name}}</td>
+                        <td>{{p.dest_office.city}}{{p.dest_office.region}}{{p.dest_office.address}}</td>
+                        <td>{{p.arrived}}</td>
+                        <td>{{p.counts}}</td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            
+            </table>
+        </div>
+    </div>
+</body>
+<script src="/statics/js/record.js"></script>
+
+</html>

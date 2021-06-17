@@ -51,10 +51,22 @@ def plan(req):
         })
     else:
         return HttpResponseRedirect("/")
+
 # logout
 def logout(req):
     req.session.flush()
     return JsonResponse({'result': True})
+
+# record
+def record(req):
+    name = req.session.get('name',False)
+    if name:
+    # 不能目的地選到自己
+        record = packages.objects.filter()
+        return render(req,"record.html",{"pList":record,"name":req.session['name']})
+    else:
+        return HttpResponseRedirect("/")
+
 
 # -----------------------api request-----------------------
 

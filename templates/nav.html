@@ -11,6 +11,8 @@
     </ul>
     <span class="navbar-text">
       {% if name %}
+      <a href="/plan"><button type="button" class="btn btn-outline-danger mr-2">開始送貨</button></a>
+      <button type="button" class="btn btn-outline-info mr-2" id="record">送貨紀錄</button>
       <button type="button" class="btn btn-outline-secondary" onclick="logout()">Logout</button>
       <script>
         var logout = () => {

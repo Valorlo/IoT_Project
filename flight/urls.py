@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', dviews.frontPage),
     path('plan',dviews.plan),
+    path('record',dviews.record),
     path('logout',dviews.logout),
 
     # api url

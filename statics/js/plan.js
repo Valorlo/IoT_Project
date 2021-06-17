@@ -225,3 +225,9 @@ function rtl() {
         }
     })
 }
+
+// delivery record
+$("#record").on('click',record)
+function record(){
+    window.location.href = "/record"
+}
