@@ -39,15 +39,18 @@ def frontPage(req):
 
 # decide the destination
 def plan(req):
+    name = req.session.get('name',False)
+    if name:
     # 不能目的地選到自己
-    dest = mailOffices.objects.filter().exclude(name = req.session['name'])
-    source = mailOffices.objects.filter(name = req.session["name"])[0]
-    return render(req,"planDestination.html",{"api":GOOGLE_API,
-    "dests":dest,
-    "address_info":source.city+source.region+source.address,
-    "name":req.session['name']
-    })
-
+        dest = mailOffices.objects.filter().exclude(name = req.session['name'])
+        source = mailOffices.objects.filter(name = req.session["name"])[0]
+        return render(req,"planDestination.html",{"api":GOOGLE_API,
+        "dests":dest,
+        "address_info":source.city+source.region+source.address,
+        "name":req.session['name']
+        })
+    else:
+        return HttpResponseRedirect("/")
 # logout
 def logout(req):
     req.session.flush()

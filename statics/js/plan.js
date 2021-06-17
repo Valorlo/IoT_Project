@@ -121,9 +121,6 @@ $('#destination').on('change', function () {
 $("#order").on('click', function () {
     var pid = $("#destination option:selected").attr("id")
     var counts = $("#pNumbers").val()
-    console.log(lat)
-    console.log(lng)
-    console.log(counts)
     if (counts > 0) {
         $.ajax({
             method: "POST",
@@ -228,22 +225,3 @@ function rtl() {
         }
     })
 }
-
-// Sending email
-$(document).ready(function () {
-    $('div.yo').on('click', "button#notifyCP", (e) => {
-        var pid = $("#packages_id").text();
-        $.ajax({
-            method: "POST",
-            url: "api/users/sendEmail",
-            data: {
-                pid: pid
-            },
-            success: function (msg) {
-                if (msg.status) {
-                    console.log("Email sent!")
-                }
-            }
-        })
-    })
-})
