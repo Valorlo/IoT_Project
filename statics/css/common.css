@@ -31,8 +31,8 @@ body {
 
 .wrapper {
   display: flex;
-  height: 90vh;
-  width: 100vw;
+  height: 85vh;
+  width: 99vw;
   align-items: center;
   overflow: auto;
   flex-direction: column;
