@@ -11,7 +11,7 @@
     </ul>
     <span class="navbar-text">
       {% if name %}
-      <a class="btn btn-lg btn-primary" style=" color:white ;background-color: #5798dd; border: none;" onclick="logout()">Logout</a>
+      <button type="button" class="btn btn-outline-secondary" onclick="logout()">Logout</button>
       <script>
         var logout = () => {
           $.ajax({
