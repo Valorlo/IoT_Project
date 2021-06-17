@@ -160,6 +160,18 @@ function deliveryInfo(){
         },
         success:function(msg){
             if(msg.status){
+                $.ajax({
+                    method:"POST",
+                    url:"api/users/sendEmail",
+                    data:{
+                        pid:msg.pid
+                    },
+                    success:function(msg){
+                        if(msg.status){
+                            console.log("Email sent!")
+                        }
+                    }
+                })
                 $("#packages_id").text(msg.pid)
                 $("#source_name").text(msg.name)
                 $("#source_address").text(msg.address)
@@ -207,22 +219,7 @@ function rtl(){
         url:"api/drone/rtl",
         success:function(msg){
             if(msg.status){
-                var pid = $("#packages_id").text();
-                $.ajax({
-                    method:"POST",
-                    url:"api/users/sendEmail",
-                    data:{
-                        pid:pid
-                    },
-                    success:function(msg){
-                        if(msg.status){
-                            console.log("Email sent!")
-                            setTimeout(function(){
-                                window.location.reload()
-                            },3000)
-                        }
-                    }
-                })
+                window.location.reload()
             }
         }
     })

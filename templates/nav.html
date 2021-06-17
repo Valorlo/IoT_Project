@@ -1,0 +1,27 @@
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="collapse navbar-collapse justify-content-center align-items-center" id="navbarText">
+    <a class="d-flex justify-content-center align-items-center mr-3" href="/"><img src="/statics/images/rsz.png"
+        class="mb-2" alt=""></a>
+    <ul class="navbar-nav mr-3">
+      {% if name %}
+      <li class="nav-item">
+        <p class="text-dark h5 nav-link mb-0" style="font-size: 1.5rem;">{{name}}</p>
+      </li>
+      {% endif %}
+    </ul>
+    <span class="navbar-text">
+      {% if name %}
+      <a class="btn btn-lg btn-primary" style="background-color: #5798dd; border: none;" onclick="logout()">Logout</a>
+      <script>
+        var logout = () => {
+          $.ajax({
+            url: '/logout'
+          }).done(() => {
+            window.location.href = '/'
+          })
+        }
+      </script>
+      {% endif %}
+    </span>
+  </div>
+</nav>

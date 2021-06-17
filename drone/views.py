@@ -32,14 +32,21 @@ def hash_code(s, salt='valorlo'):  # 密碼加密
 # authenticate, load first page
 def frontPage(req):
     name = req.session.get('name',False)
-    return render(req,"login.html",{"name":name})
+    if name:
+        return HttpResponseRedirect("/plan")
+    else:
+        return render(req,"login.html")
 
 # decide the destination
 def plan(req):
     # 不能目的地選到自己
     dest = mailOffices.objects.filter().exclude(name = req.session['name'])
     source = mailOffices.objects.filter(name = req.session["name"])[0]
-    return render(req,"planDestination.html",{"api":GOOGLE_API,"dests":dest,"address_info":source.city+source.region+source.address})
+    return render(req,"planDestination.html",{"api":GOOGLE_API,
+    "dests":dest,
+    "address_info":source.city+source.region+source.address,
+    "name":req.session['name']
+    })
 
 # logout
 def logout(req):

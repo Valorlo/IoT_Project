@@ -82,19 +82,6 @@
         </div>
     </div>
 
-    {% if name %}
-    <h3>{{name}} 你已經登入了!</h3>
-    <script>
-        var logout = () => {
-            $.ajax({
-                url: '/logout'
-            }).done(() => {
-                window.location.href = '/'
-            })
-        }
-    </script>
-    <a href="#" onclick="logout()">登出</a>
-    {% else %}
     <div class="main" style="width: 150vw; height: 100vh;"></div>
     <div class="d-flex flex-column justify-content-center align-items-center" style="width: 100vw; height: 100vh;">
         <div class="icon"><img src="/statics/images/d.png"
@@ -113,7 +100,6 @@
             </div>
         </div>
     </div>
-    {% endif %}
 </body>
 <script src="/statics/js/login.js"></script>
 <!-- 台灣縣市鄉鎮下拉選單 -->
