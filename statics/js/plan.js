@@ -11,7 +11,7 @@ var origin;
 function initialize() {
     geocoder = new google.maps.Geocoder();
     var address = $(".source_info").text()
-    geocoder.geocode( { 'address': address}, function(results, status) {
+    geocoder.geocode({ 'address': address }, function (results, status) {
         if (status == google.maps.GeocoderStatus.OK) {
             origin = results[0].geometry.location
             // initialize map
@@ -20,7 +20,7 @@ function initialize() {
                 mapTypeId: google.maps.MapTypeId.SATELLITE,
                 center: origin
             });
-            
+
             marker = new google.maps.Marker({
                 position: origin,
                 map: map,
@@ -44,11 +44,11 @@ function GPSinterval(map, marker) {
         strokeWeight: 3,
     });
     poly.setMap(map);
-    Ginterval = window.setInterval(function() {
+    Ginterval = window.setInterval(function () {
         $.ajax({
             method: "GET",
             url: "/api/drone/current",
-            success: function(msg) {
+            success: function (msg) {
                 cp = []
                 if (!msg.status) {
                     console.log("GPS not recived")
@@ -84,21 +84,21 @@ function GPSinterval(map, marker) {
 // Sets the map on all markers in the array.
 function setMapOnAll(map) {
     for (let i = 0; i < markers.length; i++) {
-      markers[i].setMap(map);
+        markers[i].setMap(map);
     }
 }
 
 // detect destinations select
-$('#destination').on('change', function() {
-    if($(this).val() != "請選擇目的地"){
+$('#destination').on('change', function () {
+    if ($(this).val() != "請選擇目的地") {
         setMapOnAll(null);
-        $("#address").attr("placeholder",$(this).val());
+        $("#address").attr("placeholder", $(this).val());
         geocoder = new google.maps.Geocoder();
         var address = $(this).val()
-        geocoder.geocode( { 'address': address}, function(results, status) {
+        geocoder.geocode({ 'address': address }, function (results, status) {
             if (status == google.maps.GeocoderStatus.OK) {
-                lat=results[0].geometry.location.lat(),
-                lng=results[0].geometry.location.lng()
+                lat = results[0].geometry.location.lat(),
+                    lng = results[0].geometry.location.lng()
                 map.setCenter(results[0].geometry.location);
                 dMarker = new google.maps.Marker({
                     position: results[0].geometry.location,
@@ -110,64 +110,68 @@ $('#destination').on('change', function() {
                 alert("失敗, 原因: " + status);
             }
         });
-    }else{
+    } else {
         setMapOnAll(null);
         map.setCenter(origin);
-        $("#address").attr("placeholder","");
+        $("#address").attr("placeholder", "");
     }
 });
 
 // order confirm
-$("#order").on('click',function(){
+$("#order").on('click', function () {
     var pid = $("#destination option:selected").attr("id")
     var counts = $("#pNumbers").val()
     console.log(lat)
     console.log(lng)
-    $.ajax({
-        method:"POST",
-        url:"api/users/confirm",
-        data:{
-            pid:pid,
-            counts:counts,
-            lat:lat,
-            lng:lng
-        },
-        success:function(msg){
-            if(msg.status){
-                // 先把地圖移回出發地
-                map.setCenter(origin);
-                $(".card").hide()
-                // 這邊要放畫地圖的function
-                // GPSinterval(map, marker)
+    console.log(counts)
+    if (counts > 0) {
+        $.ajax({
+            method: "POST",
+            url: "api/users/confirm",
+            data: {
+                pid: pid,
+                counts: counts,
+                lat: lat,
+                lng: lng
+            },
+            success: function (msg) {
+                if (msg.status) {
+                    // 先把地圖移回出發地
+                    map.setCenter(origin);
+                    $(".card").hide()
+                    // 這邊要放畫地圖的function
+                    // GPSinterval(map, marker)
 
-                // test for 簽收功能
-                setTimeout(deliveryInfo,3000)
-            }else{
-                alert("something went wrong :(")
+                    // test for 簽收功能
+                    setTimeout(deliveryInfo, 3000)
+                } else {
+                    alert("something went wrong :(")
+                }
             }
-        }
-    })
+        })
+    }
+
 })
 
 // arrive destination, show packages info
-function deliveryInfo(){
+function deliveryInfo() {
     var mid = $("#destination option:selected").attr("id")
     $.ajax({
-        method:"POST",
-        url:"api/users/retrieve",
-        data:{
-            mid:mid
+        method: "POST",
+        url: "api/users/retrieve",
+        data: {
+            mid: mid
         },
-        success:function(msg){
-            if(msg.status){
+        success: function (msg) {
+            if (msg.status) {
                 $.ajax({
-                    method:"POST",
-                    url:"api/users/sendEmail",
-                    data:{
-                        pid:msg.pid
+                    method: "POST",
+                    url: "api/users/sendEmail",
+                    data: {
+                        pid: msg.pid
                     },
-                    success:function(msg){
-                        if(msg.status){
+                    success: function (msg) {
+                        if (msg.status) {
                             console.log("Email sent!")
                         }
                     }
@@ -176,8 +180,8 @@ function deliveryInfo(){
                 $("#source_name").text(msg.name)
                 $("#source_address").text(msg.address)
                 var date = new Date(msg.time)
-                var result = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' 
-                            + date.getHours() + ":" + ((date.getMinutes()<10?'0':'') + date.getMinutes())
+                var result = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' '
+                    + date.getHours() + ":" + ((date.getMinutes() < 10 ? '0' : '') + date.getMinutes())
                 $("#start_time").text(result)
                 $("#p_counts").text(msg.counts)
             }
@@ -187,23 +191,23 @@ function deliveryInfo(){
 }
 
 // sign up packages
-$("#signfor").on('click',signfor)
-function signfor(){
+$("#signfor").on('click', signfor)
+function signfor() {
     var pid = $("#packages_id").text();
     $.ajax({
-        method:"POST",
-        url:"api/users/signfor",
-        data:{
-            pid:pid
+        method: "POST",
+        url: "api/users/signfor",
+        data: {
+            pid: pid
         },
-        success:function(msg){
-            if(msg.status){
+        success: function (msg) {
+            if (msg.status) {
                 $("thead tr").children()[5].remove()
                 $("tbody tr").children()[5].remove()
                 $("thead tr").append(`<th scope="col">抵達時間</th><th scope="col">返航</th>`)
                 var date = new Date(msg.arrive_time)
-                var result = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' 
-                            + date.getHours() + ":" + ((date.getMinutes()<10?'0':'') + date.getMinutes())
+                var result = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' '
+                    + date.getHours() + ":" + ((date.getMinutes() < 10 ? '0' : '') + date.getMinutes())
                 $("tbody tr").append(`<td>${result}</td><td><button type="button" class="btn btn-success btn-sm" data-toggle="modal"
                 data-target="#warning">返航</button></td>`)
             }
@@ -212,13 +216,13 @@ function signfor(){
 }
 
 // drone rtl
-$("#return").on('click',rtl)
-function rtl(){
+$("#return").on('click', rtl)
+function rtl() {
     $.ajax({
-        method:"POST",
-        url:"api/drone/rtl",
-        success:function(msg){
-            if(msg.status){
+        method: "POST",
+        url: "api/drone/rtl",
+        success: function (msg) {
+            if (msg.status) {
                 window.location.reload()
             }
         }
@@ -226,17 +230,17 @@ function rtl(){
 }
 
 // Sending email
-$(document).ready(function(){
-    $('div.yo').on('click',"button#notifyCP",(e)=>{
+$(document).ready(function () {
+    $('div.yo').on('click', "button#notifyCP", (e) => {
         var pid = $("#packages_id").text();
         $.ajax({
-            method:"POST",
-            url:"api/users/sendEmail",
-            data:{
-                pid:pid
+            method: "POST",
+            url: "api/users/sendEmail",
+            data: {
+                pid: pid
             },
-            success:function(msg){
-                if(msg.status){
+            success: function (msg) {
+                if (msg.status) {
                     console.log("Email sent!")
                 }
             }
