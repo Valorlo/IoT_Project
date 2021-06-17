@@ -88,7 +88,7 @@ def api_confirm(req):
     if req.method == 'POST':
         pid = req.POST['pid']
         counts = int(req.POST['counts'])
-        # destination's lat lng，要publish到broker
+        # 跟無人機講 GO 跟 destination's lat lng，要publish到broker
         lat = req.POST['lat']
         lat = req.POST['lng']
         dest = mailOffices.objects.filter(id = pid)[0]
@@ -150,7 +150,7 @@ def api_sendEmail(req):
 # api/drone/current
 @csrf_exempt
 def api_currentPos(req):
-    # 網頁是用get method去抓無人機目前飛行的gps(subscribe)
+    # 網頁是用get method去抓無人機目前飛行的gps(subscribe)，如果sub到-1的值的話就代表無人機到了
     pass
 
 # api/drone/rtl
