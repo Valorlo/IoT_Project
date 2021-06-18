@@ -274,11 +274,6 @@ def api_currentPos(req):
         return JsonResponse({"status":True,"currentP":cp})
     else:
         return JsonResponse({"status":False})
-    # # test data
-    # cp = []
-    # cp.append(22.718122)
-    # cp.append(120.3079563)
-    # return JsonResponse({"status":True,"currentP":cp})
 
 # api/drone/state
 @csrf_exempt
@@ -295,8 +290,6 @@ def api_droneState(req):
         return JsonResponse({"state":STAT_reply})
     else:
         return JsonResponse({"state":False})
-    # # test data
-    # return JsonResponse({"state":"FLY"})
 
 # api/drone/rtl
 @csrf_exempt
