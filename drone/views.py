@@ -28,6 +28,8 @@ pub_DST = "/AILAB/DRONE/DST"
 pub_GO = "/AILAB/DRONE/GO"
 pub_RTL = "/AILAB/DRONE/RTL"
 client_id = f'python-mqtt-{random.randint(0, 100)}'
+GPS_reply = ""
+STAT_reply = ""
 
 # Create your views here.
 
@@ -56,7 +58,6 @@ def connect_mqtt() -> mqtt_client:
 
 def GPS_subscribe(client: mqtt_client):
     # print("subscribe")
-    GPS_reply = ""
     def on_message(client, userdata, msg):
         global GPS_reply
         # print(f"Received `{msg.payload.decode()}` from `{msg.topic}` topic")
@@ -64,13 +65,11 @@ def GPS_subscribe(client: mqtt_client):
         # GPS_reply = switch_control['value'][0]
         print(GPS_reply)
 
-    # print("out",GPS_reply)
     client.subscribe(GPS_topic)
     client.on_message = on_message
 
 def STAT_subscribe(client: mqtt_client):
     # print("subscribe")
-    STAT_reply = ""
     def on_message(client, userdata, msg):
         global STAT_reply
         # print(f"Received `{msg.payload.decode()}` from `{msg.topic}` topic")
@@ -195,11 +194,14 @@ def api_login(req):
 @csrf_exempt
 def api_confirm(req):
     if req.method == 'POST':
+        client = connect_mqtt()
         pid = req.POST['pid']
         counts = int(req.POST['counts'])
+        publish_GO(client)
         # 跟無人機講 GO 跟 destination's lat lng，要publish到broker
         lat = req.POST['lat']
-        lat = req.POST['lng']
+        lng = req.POST['lng']
+        publish_DST(client,lat+"@"+lng)
         dest = mailOffices.objects.filter(id = pid)[0]
         source = mailOffices.objects.filter(name = req.session['name'])[0]
         package = packages.objects.create(dest_office = dest,source_office = source,counts = counts)
@@ -260,25 +262,40 @@ def api_sendEmail(req):
 @csrf_exempt
 def api_currentPos(req):
     # subscribe無人機目前飛行的gps
+    client = connect_mqtt()
     GPS_subscribe(client)
-    # test data
-    cp = []
-    cp.append(22.718122)
-    cp.append(120.3079563)
-    return JsonResponse({"status":True,"currentP":cp})
+    if GPS_reply != "":
+        split_GPS = GPS_reply.split('@')
+        cp = []
+        cp.append(int(split_GPS[0]))
+        cp.append(int(split_GPS[1]))
+        return JsonResponse({"status":True,"currentP":cp})
+    else:
+        return JsonResponse({"status":False})
+    # # test data
+    # cp = []
+    # cp.append(22.718122)
+    # cp.append(120.3079563)
+    # return JsonResponse({"status":True,"currentP":cp})
 
 # api/drone/state
 @csrf_exempt
 def api_droneState(req):
     # subscribe無人機目前的狀態
+    client = connect_mqtt()
     STAT_subscribe(client)
-    # test data
-    return JsonResponse({"state":"FLY"})
+    if STAT_reply != "":
+        return JsonResponse({"state":STAT_reply})
+    else:
+        return JsonResponse({"state":False})
+    # # test data
+    # return JsonResponse({"state":"FLY"})
 
 # api/drone/rtl
 @csrf_exempt
 def api_rtl(req):
     if req.method == 'POST':
         # 這邊要publish"返航"的信號給無人機
+        client = connect_mqtt()
         publish_RTL(client)
         return JsonResponse({'status':True})
