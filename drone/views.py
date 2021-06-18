@@ -21,12 +21,12 @@ from paho.mqtt import client as mqtt_client
 
 broker = '140.127.208.60'
 port = 1883
-GPS_topic = "/AILAB/DRONE/GPS"
-STAT_topic = "/AILAB/DRONE/STAT"
-HIGH_topic = "AILAB/IOT/HIGH"
-pub_DST = "/AILAB/DRONE/DST"
-pub_GO = "/AILAB/DRONE/GO"
-pub_RTL = "/AILAB/DRONE/RTL"
+GPS_topic = "AILAB/IOT/DRONE/GPS"
+STAT_topic = "AILAB/IOT/DRONE/STAT"
+HIGH_topic = "AILAB/IOT/DRONE/HIGH"
+pub_DST = "AILAB/IOT/SERVER/DST"
+pub_GO = "AILAB/IOT/SERVER/GO"
+pub_RTL = "AILAB/IOT/SERVER/RTL"
 client_id = f'python-mqtt-{random.randint(0, 100)}'
 GPS_reply = ""
 STAT_reply = ""
@@ -94,7 +94,7 @@ def publish_DST(client,where):
 
     # time.sleep(30)
 def publish_RTL(client):
-    msg ="1"
+    msg ="True"
     result = client.publish(pub_RTL, json.dumps(msg))
     # result: [0, 1]
     status = result[0]
@@ -104,7 +104,7 @@ def publish_RTL(client):
         print(f"Failed to send message to topic {pub_RTL}")
 
 def publish_GO(client):
-    msg ="1"
+    msg ="True"
     result = client.publish(pub_GO, json.dumps(msg))
     # result: [0, 1]
     status = result[0]
@@ -263,12 +263,16 @@ def api_sendEmail(req):
 def api_currentPos(req):
     # subscribe無人機目前飛行的gps
     client = connect_mqtt()
-    GPS_subscribe(client)
+    while True:
+        GPS_subscribe(client)
+        if GPS_reply != "":
+            break
+        client.loop()
     if GPS_reply != "":
         split_GPS = GPS_reply.split('@')
         cp = []
-        cp.append(int(split_GPS[0]))
-        cp.append(int(split_GPS[1]))
+        cp.append(float(split_GPS[0]))
+        cp.append(float(split_GPS[1]))
         return JsonResponse({"status":True,"currentP":cp})
     else:
         return JsonResponse({"status":False})
@@ -283,7 +287,12 @@ def api_currentPos(req):
 def api_droneState(req):
     # subscribe無人機目前的狀態
     client = connect_mqtt()
-    STAT_subscribe(client)
+    while True:
+        STAT_subscribe(client)
+        if STAT_reply != "":
+            break
+        client.loop()
+    
     if STAT_reply != "":
         return JsonResponse({"state":STAT_reply})
     else:
