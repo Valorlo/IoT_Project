@@ -72,7 +72,7 @@ function GPSinterval(map, marker) {
                     console.log("GPS not recived")
                 }
                 else {
-                    cp = [msg.currentP[0], msg.currentP[1]+count/100]
+                    cp = [msg.currentP[0], msg.currentP[1]]
                     var pos = new google.maps.LatLng(cp[0], cp[1]);
                     console.log(cp[0])
                     console.log(cp[1])

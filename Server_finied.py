@@ -6,11 +6,12 @@ from paho.mqtt import client as mqtt_client
 
 broker = '140.127.208.60'
 port = 1883
-GPS_topic = "/AILAB/DRONE/GPS"
-STAT_topic = "/AILAB/DRONE/STAT"
-pub_DST = "/AILAB/DRONE/DST"
-pub_GO = "/AILAB/DRONE/GO"
-pub_RTL = "/AILAB/DRONE/RTL"
+GPS_topic = "AILAB/IOT/DRONE/GPS"
+STAT_topic = "AILAB/IOT/DRONE/STAT"
+HIGH_topic = "AILAB/IOT/DRONE/HIGH"
+pub_DST = "AILAB/IOT/SERVER/DST"
+pub_GO = "AILAB/IOT/SERVER/GO"
+pub_RTL = "AILAB/IOT/SERVER/RTL"
 # generate client ID with pub prefix randomly
 
 client_id = f'python-mqtt-{random.randint(0, 100)}'
@@ -105,14 +106,13 @@ def publish_GO(client):
 
 def run():
     client = connect_mqtt()
-    publish_RTL(client)
+    # GPS_subscribe(client)
     while True:
+        # publish_RTL(client)
         GPS_subscribe(client)
-        STAT_subscribe(client)
+        # STAT_subscribe(client)
         time.sleep(3)
         client.loop()
 
 if __name__ == '__main__':
-    client = connect_mqtt()
-    publish_RTL(client)
-    GPS_subscribe(client)
+    run()
