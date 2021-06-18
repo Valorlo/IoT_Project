@@ -4,20 +4,21 @@ import json
 from paho.mqtt import client as mqtt_client
 
 
-broker = '140.127.208.184'
+broker = '140.127.208.60'
 port = 1883
-topic = "/AILAB/IOT/DRONE/#"
-pub_topic = "/AILAB/IOT/DRONE/DST"
+GPS_topic = "/AILAB/DRONE/GPS"
+STAT_topic = "/AILAB/DRONE/STAT"
+pub_DST = "/AILAB/DRONE/DST"
+pub_GO = "/AILAB/DRONE/GO"
+pub_RTL = "/AILAB/DRONE/RTL"
 # generate client ID with pub prefix randomly
+
 client_id = f'python-mqtt-{random.randint(0, 100)}'
-# client2_id = f'python-mqtt-{random.randint(0, 100)}'
 # username = 'DKPK49AE9ZS9ZX5577'
 # password = 'DKPK49AE9ZS9ZX5577'
-GPSx=""
-GPSy=""
-RTL=""
-GO=""
+
 switch_control=""
+
 
 def connect_mqtt() -> mqtt_client:
     def on_connect(client, userdata, flags, rc):
@@ -32,75 +33,86 @@ def connect_mqtt() -> mqtt_client:
     client.connect(broker, port)
     return client
 
+def drone_init(client: mqtt_client):
+    msg = ""
+    result = client.publish(pub_DST, json.dumps(msg))
+    msg = "0"
+    result = client.publish(pub_RTL, json.dumps(msg))
+    msg = "0"
+    result = client.publish(pub_GO, json.dumps(msg))
+    
 
 
 
-def subscribe(client: mqtt_client):
+def GPS_subscribe(client: mqtt_client):
     # print("subscribe")
+    GPS_reply = ""
     def on_message(client, userdata, msg):
-        # global switch_control
-        print(f"Received `{msg.payload.decode()}` from `{msg.topic}` topic")
-        switch_control = json.loads(msg.payload.decode())
-    client.subscribe(topic)
+        global GPS_reply
+        # print(f"Received `{msg.payload.decode()}` from `{msg.topic}` topic")
+        GPS_reply = msg.payload.decode()
+        # GPS_reply = switch_control['value'][0]
+        print(GPS_reply)
+
+    # print("out",GPS_reply)
+    client.subscribe(GPS_topic)
     client.on_message = on_message
-    time.sleep(10)
 
+def STAT_subscribe(client: mqtt_client):
+    # print("subscribe")
+    STAT_reply = ""
+    def on_message(client, userdata, msg):
+        global STAT_reply
+        # print(f"Received `{msg.payload.decode()}` from `{msg.topic}` topic")
+        STAT_reply = msg.payload.decode()
+        # GPS_reply = switch_control['value'][0]
+        print(STAT_reply)
 
-def destination_publish(client):
-    GPSx=""
-    GPSy=""
-    global switch_control
-    # print("publish")
-    # print("switch_control: ",switch_control)
-    if GPSx!= "" and GPSy!= "":
-        msg = [{'GPS':"("+GPSx+","+GPSy+")"}]
-        result = client.publish(pub_topic, json.dumps(msg))
-        # result: [0, 1]
-        status = result[0]
-        if status == 0:
-            print(f"Send `{msg}` to topic `{pub_topic}`")
-        else:
-            print(f"Failed to send message to topic {pub_topic}")
-        time.sleep(30)
+    # print("out",GPS_reply)
+    client.subscribe(STAT_topic)
+    client.on_message = on_message
 
+def publish_DST(client,where):
+    msg = where
+    result = client.publish(pub_DST, json.dumps(msg))
+    # result: [0, 1]
+    status = result[0]
+    if status == 0:
+        print(f"Send `{msg}` to topic `{pub_DST}`")
+    else:
+        print(f"Failed to send message to topic {pub_DST}")
 
-def RTL_publish(client):
-    RTL =""
-    # print("publish")
-    # print("switch_control: ",switch_control)
-    if RTL!= "":
-        msg = [{'RTL':str(RTL)}]
-        result = client.publish(pub_topic, json.dumps(msg))
-        # result: [0, 1]
-        status = result[0]
-        if status == 0:
-            print(f"Send `{msg}` to topic `{pub_topic}`")
-        else:
-            print(f"Failed to send message to topic {pub_topic}")
-        time.sleep(30)
+    # time.sleep(30)
+def publish_RTL(client):
+    msg ="1"
+    result = client.publish(pub_RTL, json.dumps(msg))
+    # result: [0, 1]
+    status = result[0]
+    if status == 0:
+        print(f"Send `{msg}` to topic `{pub_RTL}`")
+    else:
+        print(f"Failed to send message to topic {pub_RTL}")
 
-
-def GO_publish(client):
-    GO =""
-    # print("publish")
-    # print("switch_control: ",switch_control)
-    if GO!= "":
-        msg = [{'RTL':str(GO)}]
-        result = client.publish(pub_topic, json.dumps(msg))
-        # result: [0, 1]
-        status = result[0]
-        if status == 0:
-            print(f"Send `{msg}` to topic `{pub_topic}`")
-        else:
-            print(f"Failed to send message to topic {pub_topic}")
-        time.sleep(30)
+def publish_GO(client):
+    msg ="1"
+    result = client.publish(pub_GO, json.dumps(msg))
+    # result: [0, 1]
+    status = result[0]
+    if status == 0:
+        print(f"Send `{msg}` to topic `{pub_GO}`")
+    else:
+        print(f"Failed to send message to topic {pub_GO}")
 
 def run():
     client = connect_mqtt()
+    publish_RTL(client)
     while True:
-        subscribe(client)
-        destination_publish(client)
+        GPS_subscribe(client)
+        STAT_subscribe(client)
+        time.sleep(3)
         client.loop()
 
 if __name__ == '__main__':
-    run()
+    client = connect_mqtt()
+    publish_RTL(client)
+    GPS_subscribe(client)
