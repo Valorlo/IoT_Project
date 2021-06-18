@@ -56,6 +56,9 @@ function GPSinterval(map, marker) {
                         clearInterval(Ginterval);
                         deliveryInfo();
                     }
+                    else{
+                        console.log(msg.state)
+                    }
                 }
             })
         }
