@@ -23,6 +23,7 @@ broker = '140.127.208.60'
 port = 1883
 GPS_topic = "/AILAB/DRONE/GPS"
 STAT_topic = "/AILAB/DRONE/STAT"
+HIGH_topic = "AILAB/IOT/HIGH"
 pub_DST = "/AILAB/DRONE/DST"
 pub_GO = "/AILAB/DRONE/GO"
 pub_RTL = "/AILAB/DRONE/RTL"
