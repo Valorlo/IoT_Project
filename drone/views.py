@@ -19,6 +19,7 @@ import os
 import time
 from paho.mqtt import client as mqtt_client
 
+GOOGLE_API = secret().api
 broker = '140.127.208.60'
 port = 1883
 GPS_topic = "/AILAB/DRONE/GPS"
@@ -30,9 +31,15 @@ client_id = f'python-mqtt-{random.randint(0, 100)}'
 GPS_reply = ""
 STAT_reply = ""
 
-# Create your views here.
+# def drone_init(client: mqtt_client):
+#     msg = ""
+#     result = client.publish(pub_DST, json.dumps(msg))
+#     msg = "0"
+#     result = client.publish(pub_RTL, json.dumps(msg))
+#     msg = "0"
+#     result = client.publish(pub_GO, json.dumps(msg))
 
-GOOGLE_API = secret().api
+# -----------------------mqtt functions-----------------------
 
 def connect_mqtt() -> mqtt_client:
     def on_connect(client, userdata, flags, rc):
@@ -46,14 +53,6 @@ def connect_mqtt() -> mqtt_client:
     client.on_connect = on_connect
     client.connect(broker, port)
     return client
-
-# def drone_init(client: mqtt_client):
-#     msg = ""
-#     result = client.publish(pub_DST, json.dumps(msg))
-#     msg = "0"
-#     result = client.publish(pub_RTL, json.dumps(msg))
-#     msg = "0"
-#     result = client.publish(pub_GO, json.dumps(msg))
 
 def GPS_subscribe(client: mqtt_client):
     # print("subscribe")
@@ -80,7 +79,6 @@ def STAT_subscribe(client: mqtt_client):
     client.subscribe(STAT_topic)
     client.on_message = on_message
 
-
 def publish_DST(client,where):
     msg = where
     result = client.publish(pub_DST, json.dumps(msg))
@@ -92,6 +90,7 @@ def publish_DST(client,where):
         print(f"Failed to send message to topic {pub_DST}")
 
     # time.sleep(30)
+
 def publish_RTL(client):
     msg ="1"
     result = client.publish(pub_RTL, json.dumps(msg))
@@ -112,14 +111,14 @@ def publish_GO(client):
     else:
         print(f"Failed to send message to topic {pub_GO}")
 
+# -----------------------web request-----------------------
 
+# hash password
 def hash_code(s, salt='valorlo'):  # 密碼加密
     h = hashlib.sha256()
     s = s + salt
     h.update(s.encode())
     return h.hexdigest()
-
-# -----------------------web request-----------------------
 
 # authenticate, load first page
 def frontPage(req):
@@ -158,7 +157,6 @@ def record(req):
         return render(req,"record.html",{"pList":record,"name":req.session['name']})
     else:
         return HttpResponseRedirect("/")
-
 
 # -----------------------api request-----------------------
 
