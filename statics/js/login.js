@@ -3,12 +3,6 @@ $('#register').on('click', function () {
     $("#registWindow").modal("toggle");
 })
 
-// 登入框框
-$('#login').on('click', function () {
-    console.log("login")
-    $("#loginWindow").modal("toggle");
-})
-
 // 註冊完成
 $('#doneRegisting').on('click', regist);
 $('#registWindow').on('keypress',function(e){
@@ -46,6 +40,11 @@ function regist() {
         })
     }
 }
+
+// 登入框框
+$('#login').on('click', function () {
+    $("#loginWindow").modal("toggle");
+})
 
 // 登入完成
 $('#doneLogin').on('click', login)

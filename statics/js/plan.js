@@ -37,6 +37,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
 
 // draw gps route on the map
 function GPSinterval(map, marker) {
+    var count = 0;
     console.log("in GPSinterval")
     poly = new google.maps.Polyline({
         strokeColor: "#000000",
@@ -45,32 +46,37 @@ function GPSinterval(map, marker) {
     });
     poly.setMap(map);
     Ginterval = window.setInterval(function () {
+        // 定時去檢查無人機到了沒
+        if(count == 10){
+            $.ajax({
+                method:"POST",
+                url:"api/drone/state",
+                success:function(msg){
+                    if(msg.state == "LAND"){
+                        clearInterval(Ginterval);
+                        deliveryInfo();
+                    }
+                }
+            })
+        }
+        // 請求無人機目前的位置
         $.ajax({
             method: "GET",
-            url: "/api/drone/current",
+            url: "api/drone/current",
             success: function (msg) {
                 cp = []
                 if (!msg.status) {
                     console.log("GPS not recived")
                 }
-                if (msg.currentP[0] == -1) {
-                    console.log("not found")
-                    window.clearInterval(Ginterval);
-                    $("h4.D_status").html("Target not found!")
-                    $("h4.D_status").empty()
-                    $("button#reload_stat").remove()
-                    $("button#takeOff").remove()
-                }
                 else {
-                    if (msg.find) {
-                        window.clearInterval(Ginterval);
-                    }
-                    cp = [msg.currentP[0], msg.currentP[1]]
+                    cp = [msg.currentP[0], msg.currentP[1]+count/100]
                     var pos = new google.maps.LatLng(cp[0], cp[1]);
-                    if ($("div.pos").length > 0) {
-                        $("div.pos").empty()
-                    }
-                    $(".pos").append(`<p><h5>Current Drone's Position : </h5><br><h5>lat : ${cp[0]} lng : ${cp[1]}</h5></p>`)
+                    console.log(cp[0])
+                    console.log(cp[1])
+                    // if ($("div.pos").length > 0) {
+                    //     $("div.pos").empty()
+                    // }
+                    // $(".pos").append(`<p><h5>Current Drone's Position : </h5><br><h5>lat : ${cp[0]} lng : ${cp[1]}</h5></p>`)
                     const path = poly.getPath()
                     marker.setPosition(pos);
                     path.push(pos)
@@ -78,6 +84,7 @@ function GPSinterval(map, marker) {
                 }
             }
         })
+        count++;
     }, 1000);
 }
 
@@ -98,7 +105,7 @@ $('#destination').on('change', function () {
         geocoder.geocode({ 'address': address }, function (results, status) {
             if (status == google.maps.GeocoderStatus.OK) {
                 lat = results[0].geometry.location.lat(),
-                    lng = results[0].geometry.location.lng()
+                lng = results[0].geometry.location.lng()
                 map.setCenter(results[0].geometry.location);
                 dMarker = new google.maps.Marker({
                     position: results[0].geometry.location,
@@ -137,10 +144,10 @@ $("#order").on('click', function () {
                     map.setCenter(origin);
                     $(".card").hide()
                     // 這邊要放畫地圖的function
-                    // GPSinterval(map, marker)
+                    GPSinterval(map, marker)
 
-                    // test for 簽收功能
-                    setTimeout(deliveryInfo, 3000)
+                    // // test for 簽收功能
+                    // setTimeout(deliveryInfo, 3000)
                 } else {
                     alert("something went wrong :(")
                 }

@@ -165,8 +165,21 @@ def api_sendEmail(req):
 # api/drone/current
 @csrf_exempt
 def api_currentPos(req):
-    # 網頁是用get method去抓無人機目前飛行的gps(subscribe)，如果sub到-1的值的話就代表無人機到了
-    pass
+    # subscribe無人機目前飛行的gps
+
+    # test data
+    cp = []
+    cp.append(22.718122)
+    cp.append(120.3079563)
+    return JsonResponse({"status":True,"currentP":cp})
+
+# api/drone/state
+@csrf_exempt
+def api_droneState(req):
+    # subscribe無人機目前的狀態
+
+    # test data
+    return JsonResponse({"state":"FLY"})
 
 # api/drone/rtl
 @csrf_exempt
