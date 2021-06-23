@@ -10,6 +10,7 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 from django.template.loader import render_to_string
 from email.utils import make_msgid 
+from geopy.distance import geodesic
 import hashlib
 import json,string,random,socket,os,time,uuid
 from datetime import date, datetime
@@ -31,6 +32,9 @@ pub_RTL = "AILAB/IOT/SERVER/RTL"
 client_id = f'python-mqtt-{random.randint(0, 100)}'
 GPS_reply = ""
 STAT_reply = ""
+dst_loc = ""
+dst_lat = ""
+dst_lng = ""
 
 # def drone_init(client: mqtt_client):
 #     msg = ""
@@ -93,7 +97,7 @@ def publish_DST(client,where):
     # time.sleep(30)
 
 def publish_RTL(client):
-    msg ="True"
+    msg =True
     result = client.publish(pub_RTL, json.dumps(msg))
     # result: [0, 1]
     status = result[0]
@@ -103,7 +107,7 @@ def publish_RTL(client):
         print(f"Failed to send message to topic {pub_RTL}")
 
 def publish_GO(client):
-    msg ="True"
+    msg =True
     result = client.publish(pub_GO, json.dumps(msg))
     # result: [0, 1]
     status = result[0]
@@ -191,15 +195,24 @@ def api_login(req):
 # api/users/confirm
 @csrf_exempt
 def api_confirm(req):
+    global dst_lat,dst_lng
     if req.method == 'POST':
         client = connect_mqtt()
         pid = req.POST['pid']
         counts = int(req.POST['counts'])
-        publish_GO(client)
+        # publish_GO(client)
         # 跟無人機講 GO 跟 destination's lat lng，要publish到broker
         lat = req.POST['lat']
         lng = req.POST['lng']
+        dst_lat = float(lat)
+        dst_lng = float(lng)
+        dst_loc = lat+"@"+lng
+        print(dst_loc)
+        
+        # start_time = time.time()
+        # while True:
         publish_DST(client,lat+"@"+lng)
+            
         dest = mailOffices.objects.filter(id = pid)[0]
         source = mailOffices.objects.filter(name = req.session['name'])[0]
         package = packages.objects.create(dest_office = dest,source_office = source,counts = counts)
@@ -255,23 +268,38 @@ def api_sendEmail(req):
         email.fail_silently = False
         email.send()
         return JsonResponse({'status':True})
-
+temp = ""
 # api/drone/current
 @csrf_exempt
 def api_currentPos(req):
+    global temp
     # subscribe無人機目前飛行的gps
+    arrive = False
     client = connect_mqtt()
     while True:
         GPS_subscribe(client)
+        # print("GPS_reply",GPS_reply)
+        # print("temp",temp)
+        
         if GPS_reply != "":
+            split_GPS = GPS_reply.split('@')
+            if geodesic((float(split_GPS[0]),float(split_GPS[1])),(dst_lat, dst_lng)) <= 0.01:
+                arrive = True
+                break
+        if GPS_reply != "" and GPS_reply != temp:
+            temp = GPS_reply
+
+
+            
             break
         client.loop()
+    print("get new GPS")
     if GPS_reply != "":
         split_GPS = GPS_reply.split('@')
         cp = []
         cp.append(float(split_GPS[0]))
         cp.append(float(split_GPS[1]))
-        return JsonResponse({"status":True,"currentP":cp})
+        return JsonResponse({"status":True,"currentP":cp,"arrive":arrive})
     else:
         return JsonResponse({"status":False})
 

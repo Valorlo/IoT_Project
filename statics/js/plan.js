@@ -14,6 +14,8 @@ function initialize() {
     geocoder.geocode({ 'address': address }, function (results, status) {
         if (status == google.maps.GeocoderStatus.OK) {
             origin = results[0].geometry.location
+            console.log("lat",results[0].geometry.location.lat())
+            console.log("lng",results[0].geometry.location.lng())
             // initialize map
             map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 19,
@@ -37,7 +39,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
 
 // draw gps route on the map
 function GPSinterval(map, marker) {
-    var count = 0;
+    // var count = 0;
     console.log("in GPSinterval")
     poly = new google.maps.Polyline({
         strokeColor: "#000000",
@@ -46,22 +48,22 @@ function GPSinterval(map, marker) {
     });
     poly.setMap(map);
     Ginterval = window.setInterval(function () {
-        // 定時去檢查無人機到了沒
-        if(count == 10){
-            $.ajax({
-                method:"POST",
-                url:"api/drone/state",
-                success:function(msg){
-                    if(msg.state == "LAND"){
-                        clearInterval(Ginterval);
-                        deliveryInfo();
-                    }
-                    else{
-                        console.log(msg.state)
-                    }
-                }
-            })
-        }
+        // // 定時去檢查無人機到了沒
+        // if(count == 10){
+        //     $.ajax({
+        //         method:"POST",
+        //         url:"api/drone/state",
+        //         success:function(msg){
+        //             if(msg.state == "LAND"){
+        //                 clearInterval(Ginterval);
+        //                 deliveryInfo();
+        //             }
+        //             else{
+        //                 console.log(msg.state)
+        //             }
+        //         }
+        //     })
+        // }
         // 請求無人機目前的位置
         $.ajax({
             method: "GET",
@@ -72,22 +74,28 @@ function GPSinterval(map, marker) {
                     console.log("GPS not recived")
                 }
                 else {
-                    cp = [msg.currentP[0], msg.currentP[1]]
-                    var pos = new google.maps.LatLng(cp[0], cp[1]);
-                    console.log(cp[0])
-                    console.log(cp[1])
-                    // if ($("div.pos").length > 0) {
-                    //     $("div.pos").empty()
-                    // }
-                    // $(".pos").append(`<p><h5>Current Drone's Position : </h5><br><h5>lat : ${cp[0]} lng : ${cp[1]}</h5></p>`)
-                    const path = poly.getPath()
-                    marker.setPosition(pos);
-                    path.push(pos)
-                    map.panTo(pos);
+                    if(!msg.arrive){
+                        cp = [msg.currentP[0], msg.currentP[1]]
+                        var pos = new google.maps.LatLng(cp[0], cp[1]);
+                        console.log(cp[0])
+                        console.log(cp[1])
+                        // if ($("div.pos").length > 0) {
+                        //     $("div.pos").empty()
+                        // }
+                        // $(".pos").append(`<p><h5>Current Drone's Position : </h5><br><h5>lat : ${cp[0]} lng : ${cp[1]}</h5></p>`)
+                        const path = poly.getPath()
+                        marker.setPosition(pos);
+                        path.push(pos)
+                        map.panTo(pos);
+                    }else{
+                        clearInterval(Ginterval);
+                        deliveryInfo();
+                    }
+                    
                 }
             }
         })
-        count++;
+        // count++;
     }, 1000);
 }
 
